@@ -1,0 +1,30 @@
+﻿<Window x:Class="Apteco.Diagnostics.UI.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="480" d:DesignWidth="640">
+  <Window.Resources>
+    <DataTemplate x:Key="ThreadDataTemplate">
+      <TextBlock Text="{Binding Name}"/>
+    </DataTemplate>
+  </Window.Resources>
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Right" Orientation="Horizontal">
+      <Button Margin="2"  Content="Export Stacktrace" Command="{Binding ExportStacktraceCommand}"/>
+      <Button Margin="2"  Content="Load Process" Command="{Binding LoadProccessesCommand}"/>
+      <Button Margin="2"  Content="Load Dump File" Command="{Binding LoadFileCommand}"/>
+    </StackPanel>
+    <Grid DockPanel.Dock="Bottom">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" MinWidth="200"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <ListBox Grid.Column="0" ItemsSource="{Binding ThreadCollection}" SelectedItem="{Binding SelectedViewModel}" ItemTemplate="{StaticResource ThreadDataTemplate}" />
+      <GridSplitter Grid.Column="1"/>
+      <TextBox Grid.Column="2" IsReadOnly="True" IsReadOnlyCaretVisible="True" Text="{Binding Stacktrace, Mode=OneWay}" />
+    </Grid>
+  </DockPanel>
+</Window>
