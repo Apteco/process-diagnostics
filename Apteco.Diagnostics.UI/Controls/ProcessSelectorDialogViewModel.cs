@@ -4,8 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Apteco.Diagnostics.UI.Utils;
 
@@ -51,6 +49,8 @@ namespace Apteco.Diagnostics.UI.Controls
     private ProcessViewModel selectedProcessViewModel;
     private ObservableCollection<ProcessViewModel> processCollection;
     private readonly BackgroundWorker loadProcessesWorker;
+    private bool showAll;
+    private bool refreshing = true;
 
     #endregion
 
@@ -81,7 +81,20 @@ namespace Apteco.Diagnostics.UI.Controls
       }
     }
 
-    public ICommand RefreshCommand { get; }
+    public bool ShowAll
+    {
+      get => showAll;
+      set
+      {
+        if (showAll == value)
+          return;
+        showAll = value;
+        OnPropertyChanged(nameof(ShowAll));
+        LoadProcesses();
+      }
+    }
+
+    public DelegateCommand RefreshCommand { get; }
     public DelegateCommand AcceptCommand { get; }
     public ICommand CancelCommand { get; }
 
@@ -94,7 +107,7 @@ namespace Apteco.Diagnostics.UI.Controls
       loadProcessesWorker = new BackgroundWorker();
       loadProcessesWorker.DoWork += OnDoWork;
       loadProcessesWorker.RunWorkerCompleted += OnRunWorkerCompleted;
-      RefreshCommand = new DelegateCommand(LoadProcesses);
+      RefreshCommand = new DelegateCommand(LoadProcesses, CanRefresh);
       AcceptCommand = new DelegateCommand(Accept, CanAccept);
       CancelCommand = new DelegateCommand(Cancel);
       LoadProcesses();
@@ -107,16 +120,28 @@ namespace Apteco.Diagnostics.UI.Controls
     private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
     {
       ProcessCollection = new ObservableCollection<ProcessViewModel>((IEnumerable<ProcessViewModel>) runWorkerCompletedEventArgs.Result);
+      refreshing = false;
+      RefreshCommand.RaiseCanExecuteChanged();
     }
 
     private void OnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
     {
-      doWorkEventArgs.Result = Process.GetProcesses().Where(p => p.ProcessName.Contains("CLMClient") || p.ProcessName.Contains("Discoverer")).Select(p => new ProcessViewModel(p));
+      if (!showAll)
+        doWorkEventArgs.Result = Process.GetProcesses().Where(p => p.ProcessName.Contains("CLMClient") || p.ProcessName.Contains("Discoverer") || p.ProcessName.Contains("Launcher")).Select(p => new ProcessViewModel(p));
+      else
+        doWorkEventArgs.Result = Process.GetProcesses().Select(p => new ProcessViewModel(p));
     }
 
     private void LoadProcesses()
     {
+      refreshing = true;
+      RefreshCommand.RaiseCanExecuteChanged();
       loadProcessesWorker.RunWorkerAsync();
+    }
+
+    private bool CanRefresh()
+    {
+      return !refreshing;
     }
 
     private void Accept()

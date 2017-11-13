@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Input;
 using Apteco.Diagnostics.Core;
 using Apteco.Diagnostics.Model;
 using Apteco.Diagnostics.UI.Controls;
 using Apteco.Diagnostics.UI.Utils;
 using Microsoft.Diagnostics.Runtime;
-using Microsoft.Win32;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Apteco.Diagnostics.UI.ViewModels
 {
@@ -95,7 +96,14 @@ namespace Apteco.Diagnostics.UI.ViewModels
       }
       catch (ClrDiagnosticsException e)
       {
-        Console.WriteLine(e);
+        RunOnUIThread(() =>
+        {
+          MessageBox.Show("The process/dump file selected has a mismatched dac architecture.",
+            "Incorrect Architecture",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Exclamation,
+            MessageBoxDefaultButton.Button1);
+        });
       }
     }
 

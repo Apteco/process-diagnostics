@@ -19,6 +19,8 @@
       </ListBox.ItemTemplate>
     </ListBox>
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+      <CheckBox Margin="2" Content="Show All Processes" IsChecked="{Binding ShowAll}"/>
+      <Button Margin="2" Content="Refresh" Command="{Binding RefreshCommand}"/>
       <Button Margin="2" Content="Accept" IsDefault="True" Command="{Binding AcceptCommand}" />
       <Button Margin="2"  Content="Cancel" IsCancel="False" Command="{Binding CancelCommand}" />
     </StackPanel>
