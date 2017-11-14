@@ -31,14 +31,13 @@ namespace Apteco.Diagnostics.UI.ViewModels
 
     public ICommand LoadProccessesCommand { get; }
     public ICommand LoadFileCommand { get; }
-
     public DelegateCommand ExportStacktraceCommand { get; }
 
     public ObservableCollection<ThreadViewModel> ThreadCollection => threadCollection ?? (threadCollection = new ObservableCollection<ThreadViewModel>());
 
     public ThreadViewModel SelectedViewModel
     {
-      get { return selectedViewModel; }
+      get => selectedViewModel;
       set
       {
         if (selectedViewModel == value)
@@ -98,8 +97,19 @@ namespace Apteco.Diagnostics.UI.ViewModels
       {
         RunOnUIThread(() =>
         {
-          MessageBox.Show("The process/dump file selected has a mismatched dac architecture.",
+          MessageBox.Show(e.Message,
             "Incorrect Architecture",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Exclamation,
+            MessageBoxDefaultButton.Button1);
+        });
+      }
+      catch (Exception e)
+      {
+        RunOnUIThread(() =>
+        {
+          MessageBox.Show(e.Message,
+            "Exception",
             MessageBoxButtons.OK,
             MessageBoxIcon.Exclamation,
             MessageBoxDefaultButton.Button1);

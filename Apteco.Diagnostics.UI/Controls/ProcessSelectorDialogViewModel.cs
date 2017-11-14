@@ -71,7 +71,7 @@ namespace Apteco.Diagnostics.UI.Controls
 
     public ObservableCollection<ProcessViewModel> ProcessCollection
     {
-      get { return processCollection; }
+      get => processCollection;
       set
       {
         if (ProcessCollection == value)
